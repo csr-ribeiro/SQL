@@ -1,0 +1,35 @@
+SELECT chamado,
+       wp.dtestimatedfinish AS prazo,
+       sub1,
+       wp3.dtestimatedfinish AS prazo_sub1,
+       sub2,
+       wp4.dtestimatedfinish AS prazo_sub2,
+       sub3,
+       wp5.dtestimatedfinish AS prazo_sub3,
+       sub4,
+       wp6.dtestimatedfinish AS prazo_sub4,
+       sub5,
+       sub6
+FROM   crosstab($$
+SELECT DISTINCT wp.idprocess          AS chamado,
+                wp2.dtestimatedfinish AS prazo_sub_chamado,
+                wp2.idprocess         AS sub_chamado
+FROM            wfprocess wp
+inner join      wfstruct ws
+ON              ws.idprocess = wp.idobject
+AND             ws.dtenabled IS NOT NULL
+AND             ws.nmstruct IS NOT NULL
+left join       wfsubprocess sub
+ON              sub.idobject = ws.idobject
+left join       wfprocess wp2
+ON              wp2.idobject = sub.idsubprocess
+AND             wp2.fgstatus <> '3'
+WHERE           wp.idprocess = '316174'
+AND             wp2.idprocess IS NOT NULL
+ORDER BY        1,
+                2 $$) AS teste (chamado VARCHAR, "sub1" VARCHAR, "sub2" VARCHAR, "sub3" VARCHAR, "sub4" VARCHAR, "sub5" VARCHAR, "sub6" VARCHAR)
+left join       wfprocess wp  ON wp.idprocess = chamado AND wp.fgstatus <> '3'
+left join       wfprocess wp3 ON wp3.idprocess = sub1 AND wp3.fgstatus <> '3'
+left join       wfprocess wp4 ON wp4.idprocess = sub2 AND wp4.fgstatus <> '3'
+left join       wfprocess wp5 ON wp5.idprocess = sub3 AND wp5.fgstatus <> '3'
+left join       wfprocess wp6 ON wp5.idprocess = sub4 AND wp6.fgstatus <> '3'
